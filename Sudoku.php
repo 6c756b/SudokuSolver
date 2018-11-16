@@ -94,7 +94,10 @@ class Sudoku
 
     private function isSafe($col, $row, $num): bool
     {
-        return !$this->usedInRow($row, $num) && !$this->usedInCol($col, $num) && !$this->usedInBox($row - $row % 3, $col - $col % 3, $num);
+        return
+            !$this->usedInRow($row, $num) &&
+            !$this->usedInCol($col, $num) &&
+            !$this->usedInBox($col - $col % 3, $row - $row % 3, $num);
     }
 
     private function usedInRow($row, $num): bool
@@ -122,6 +125,7 @@ class Sudoku
         for ($col = 0; $col < $this->BOXSIZE; $col++) {
             for ($row = 0; $row < $this->BOXSIZE; $row++) {
                 if ($this->GRID[$col + $startCol][$row + $startRow] == $num) {
+                    echo "usedInBox true";
                     return true;
                 }
             }
