@@ -10,6 +10,12 @@ require 'Sudoku.php';
 $sudoku = new Sudoku(9);
 $sudoku->createTestBoard();
 $sudoku->printBoard();
+echo "<br>";
+if ($sudoku->solveBoard()) ;
+{
+    echo "<br>";
+    $sudoku->printBoard();
+}
 
 ?>
 </body>

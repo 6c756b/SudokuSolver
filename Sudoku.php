@@ -12,6 +12,7 @@ class Sudoku
     private $GRID;
     private $ROW = 0;
     private $COL = 0;
+    private $BOXSIZE = 3;
 
     /**
      * Sudoku constructor.
@@ -20,6 +21,7 @@ class Sudoku
     public function __construct($SIZE)
     {
         $this->SIZE = $SIZE;
+        //$this->BOXSIZE = sqrt($this->SIZE);
         for ($c = 0; $c < $this->SIZE; $c++) {
             $this->GRID[$c] = array();
             for ($r = 0; $r < $this->SIZE; $r++) {
@@ -42,7 +44,7 @@ class Sudoku
         }
     }
 
-    function createTestBoard()
+    public function createTestBoard()
     {
         $this->GRID = array(
             array(3, 0, 6, 5, 0, 8, 4, 0, 0),
@@ -57,15 +59,14 @@ class Sudoku
         );
     }
 
-    function solveBoard(): bool
+    public function solveBoard(): bool
     {
-
         if (!$this->findUnassignedLocation()) {
             return true;
         }
 
         for ($num = 1; $num <= 9; $num++) {
-            if ($this->isSafe($num, $)) {
+            if ($this->isSafe($this->ROW, $this->ROW, $num)) {
                 $this->GRID[$this->ROW][$this->COL] = $num;
 
                 if ($this->solveBoard()) {
@@ -79,11 +80,11 @@ class Sudoku
         return false;
     }
 
-    private function findUnassignedLocation()
+    private function findUnassignedLocation(): bool
     {
-        for ($c = 0; $c < $this->SIZE; $c++) {
-            for ($r = 0; $r < $this->SIZE; $r++) {
-                if ($this->GRID[$c][$r] == 0) {
+        for ($this->COL = 0; $this->COL < $this->SIZE; $this->COL++) {
+            for ($this->ROW = 0; $this->ROW < $this->SIZE; $this->ROW++) {
+                if ($this->GRID[$this->COL][$this->ROW] == 0) {
                     return true;
                 }
             }
@@ -91,10 +92,41 @@ class Sudoku
         return false;
     }
 
-    private function isSafe(int $num)
+    private function isSafe($col, $row, $num): bool
     {
-        return !$this->usedInRow()
+        return !$this->usedInRow($row, $num) && !$this->usedInCol($col, $num) && !$this->usedInBox($row - $row % 3, $col - $col % 3, $num);
     }
 
+    private function usedInRow($row, $num): bool
+    {
+        for ($col = 0; $col < $this->SIZE; $col++) {
+            if ($this->GRID[$col][$row] == $num) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function usedInCol($col, $num): bool
+    {
+        for ($row = 0; $row < $this->SIZE; $row++) {
+            if ($this->GRID[$col][$row] == $num) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function usedInBox($startCol, $startRow, $num): bool
+    {
+        for ($col = 0; $col < $this->BOXSIZE; $col++) {
+            for ($row = 0; $row < $this->BOXSIZE; $row++) {
+                if ($this->GRID[$col + $startCol][$row + $startRow] == $num) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
 
