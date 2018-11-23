@@ -10,8 +10,6 @@ class Sudoku
 {
     private $SIZE = 9;
     private $GRID;
-    private $ROW = 0;
-    private $COL = 0;
     private $BOXSIZE = 3;
 
     /**
@@ -59,78 +57,75 @@ class Sudoku
         );
     }
 
-    public function solveBoard(): bool
+    public function solveBoard($GRID): bool
     {
-        if (!$this->findUnassignedLocation()) {
+        $row = -1;
+        $col = -1;
+        $isEmpty = true;
+
+        for ($i = 0; $i < $this->SIZE; $i++) {
+            for ($j = 0; $j < $this->SIZE; $j++) {
+                if ($GRID[$i][$j] == 0) {
+                    $row = $i;
+                    $col = $j;
+                    $isEmpty = false;
+                    break;
+                }
+            }
+            if (!$isEmpty) {
+                break;
+            }
+        }
+
+        if ($isEmpty) {
             return true;
         }
 
-        for ($num = 1; $num <= 9; $num++) {
-            if ($this->isSafe($this->ROW, $this->ROW, $num)) {
-                $this->GRID[$this->ROW][$this->COL] = $num;
-
-                if ($this->solveBoard()) {
+        for ($num = 1; $num <= $this->SIZE; $num++) {
+            if ($this->isSafe($GRID, $col, $row, $num)) {
+                $GRID[$col][$row] = $num;
+                if ($this->solveBoard($GRID)) {
                     return true;
-                }
-
-                //FAILED, UNASSIGNED
-                $this->GRID[$this->ROW][$this->COL] = 0;
-            }
-        }
-        return false;
-    }
-
-    private function findUnassignedLocation(): bool
-    {
-        for ($this->COL = 0; $this->COL < $this->SIZE; $this->COL++) {
-            for ($this->ROW = 0; $this->ROW < $this->SIZE; $this->ROW++) {
-                if ($this->GRID[$this->COL][$this->ROW] == 0) {
-                    return true;
+                } else {
+                    $GRID[$col][$row] = 0;
                 }
             }
         }
         return false;
     }
 
-    private function isSafe($col, $row, $num): bool
-    {
-        return
-            !$this->usedInRow($row, $num) &&
-            !$this->usedInCol($col, $num) &&
-            !$this->usedInBox($col - $col % 3, $row - $row % 3, $num);
-    }
 
-    private function usedInRow($row, $num): bool
+    private function isSafe($GRID, $col, $row, $num): bool
     {
-        for ($col = 0; $col < $this->SIZE; $col++) {
-            if ($this->GRID[$col][$row] == $num) {
-                return true;
+        for ($d = 0; $d < $this->SIZE; $d++) {
+            if ($GRID[$col][$d] == $num) {
+                return false;
             }
         }
-        return false;
-    }
 
-    private function usedInCol($col, $num): bool
-    {
-        for ($row = 0; $row < $this->SIZE; $row++) {
-            if ($this->GRID[$col][$row] == $num) {
-                return true;
+        for ($r = 0; $r < $this->SIZE; $r++) {
+            if ($GRID[$r][$row] == $num) {
+                return false;
             }
         }
-        return false;
-    }
 
-    private function usedInBox($startCol, $startRow, $num): bool
-    {
-        for ($col = 0; $col < $this->BOXSIZE; $col++) {
-            for ($row = 0; $row < $this->BOXSIZE; $row++) {
-                if ($this->GRID[$col + $startCol][$row + $startRow] == $num) {
-                    echo "usedInBox true";
-                    return true;
+        $boxRowStart = $row - $row % $this->BOXSIZE;
+        $boxColStart = $col - $col % $this->BOXSIZE;
+
+        for ($d = $boxColStart; $d < $boxColStart + $this->BOXSIZE; $d++) {
+            for ($r = $boxRowStart; $r < $boxRowStart + $this->BOXSIZE; $r++) {
+                if ($GRID[$r][$d] == $num) {
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
+
+    }
+
+    public function getGrid()
+    {
+        return $this->GRID;
     }
 }
 

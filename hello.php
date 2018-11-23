@@ -10,10 +10,10 @@ require 'Sudoku.php';
 $sudoku = new Sudoku(9);
 $sudoku->createTestBoard();
 $sudoku->printBoard();
-echo "<br>";
-if ($sudoku->solveBoard()) ;
+
+if ($sudoku->solveBoard($sudoku->getGrid())) ;
 {
-    echo "<br>";
+    echo "<p>Solution:</p>";
     $sudoku->printBoard();
 }
 
