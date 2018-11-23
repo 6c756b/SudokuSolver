@@ -8,10 +8,11 @@ require 'Sudoku.php';
 # First Example
 
 $sudoku = new Sudoku(9);
+$GRID = $sudoku->getGrid();
 $sudoku->createTestBoard();
 $sudoku->printBoard();
-
-if ($sudoku->solveBoard($sudoku->getGrid())) ;
+echo sizeof($GRID);
+if ($sudoku::solveBoard($GRID, 9)) ;
 {
     echo "<p>Solution:</p>";
     $sudoku->printBoard();

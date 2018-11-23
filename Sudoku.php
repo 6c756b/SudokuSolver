@@ -57,14 +57,14 @@ class Sudoku
         );
     }
 
-    public function solveBoard($GRID): bool
+    public static function solveBoard($GRID, $n): bool
     {
         $row = -1;
         $col = -1;
         $isEmpty = true;
 
-        for ($i = 0; $i < $this->SIZE; $i++) {
-            for ($j = 0; $j < $this->SIZE; $j++) {
+        for ($i = 0; $i < $n; $i++) {
+            for ($j = 0; $j < $n; $j++) {
                 if ($GRID[$i][$j] == 0) {
                     $row = $i;
                     $col = $j;
@@ -81,10 +81,10 @@ class Sudoku
             return true;
         }
 
-        for ($num = 1; $num <= $this->SIZE; $num++) {
-            if ($this->isSafe($GRID, $col, $row, $num)) {
+        for ($num = 1; $num <= $n; $num++) {
+            if (Sudoku::isSafe($GRID, $col, $row, $num)) {
                 $GRID[$col][$row] = $num;
-                if ($this->solveBoard($GRID)) {
+                if (Sudoku::solveBoard($GRID, $n)) {
                     return true;
                 } else {
                     $GRID[$col][$row] = 0;
@@ -94,26 +94,27 @@ class Sudoku
         return false;
     }
 
-
-    private function isSafe($GRID, $col, $row, $num): bool
+    public
+    static function isSafe($GRID, $col, $row, $num): bool
     {
-        for ($d = 0; $d < $this->SIZE; $d++) {
+        for ($d = 0; $d < sizeof($GRID); $d++) {
             if ($GRID[$col][$d] == $num) {
                 return false;
             }
         }
 
-        for ($r = 0; $r < $this->SIZE; $r++) {
+        for ($r = 0; $r < sizeof($GRID); $r++) {
             if ($GRID[$r][$row] == $num) {
                 return false;
             }
         }
 
-        $boxRowStart = $row - $row % $this->BOXSIZE;
-        $boxColStart = $col - $col % $this->BOXSIZE;
+        $boxSize = (int)sqrt(sizeof($GRID));
+        $boxRowStart = $row - $row % $boxSize;
+        $boxColStart = $col - $col % $boxSize;
 
-        for ($d = $boxColStart; $d < $boxColStart + $this->BOXSIZE; $d++) {
-            for ($r = $boxRowStart; $r < $boxRowStart + $this->BOXSIZE; $r++) {
+        for ($d = $boxColStart; $d < $boxColStart + $boxSize; $d++) {
+            for ($r = $boxRowStart; $r < $boxRowStart + $boxSize; $r++) {
                 if ($GRID[$r][$d] == $num) {
                     return false;
                 }
@@ -128,4 +129,7 @@ class Sudoku
         return $this->GRID;
     }
 }
+
+
+
 
